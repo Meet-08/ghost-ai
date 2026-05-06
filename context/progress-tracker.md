@@ -52,6 +52,11 @@ Update this file whenever the current phase, active feature, or implementation s
   - Used Clerk's dark theme from @clerk/ui/themes as base
   - Applied CSS custom properties for form styling (no hardcoded colors)
   - Leveraged clerkMiddleware() in start.ts for server-side auth handling
+- ✅ Built the `/editor` home screen and project dialog flow
+  - Added the centered editor home prompt and `New Project` action
+  - Wired mock create, rename, and delete dialogs with live slug preview on create
+  - Added owned-project rename/delete actions in the sidebar and hid them for shared projects
+  - Kept all project state in-memory with a dedicated hook and no persistence or API calls
 
 ## In Progress
 
@@ -85,3 +90,4 @@ Update this file whenever the current phase, active feature, or implementation s
 - ClerkProvider wraps root with dark theme and afterSignOutUrl callback
 - Public routes: /sign-in, /sign-up; protected: /, /editor (all others by default)
 - UserButton integrated into editor navbar for user profile and logout
+- Editor project management is now handled with a local in-memory hook and mock project data only

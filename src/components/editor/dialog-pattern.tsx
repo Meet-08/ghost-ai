@@ -8,9 +8,6 @@ import {
 } from "#/components/ui/dialog.tsx";
 import type React from "react";
 
-/**
- * Dialog configuration type for creating consistent dialogs across the application
- */
 export interface DialogConfig {
 	title: string;
 	description?: string;
@@ -21,27 +18,6 @@ export interface DialogConfig {
 	showCloseButton?: boolean;
 }
 
-/**
- * Base dialog pattern component that accepts title, description, and footer actions
- *
- * @example
- * ```tsx
- * <DialogPattern
- *   title="Create New Project"
- *   description="Enter project details below"
- *   open={isOpen}
- *   onOpenChange={setIsOpen}
- *   footer={
- *     <>
- *       <Button variant="outline">Cancel</Button>
- *       <Button>Create</Button>
- *     </>
- *   }
- * >
- *   <input type="text" placeholder="Project name" />
- * </DialogPattern>
- * ```
- */
 export function DialogPattern({
 	title,
 	description,
