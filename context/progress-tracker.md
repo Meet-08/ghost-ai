@@ -59,11 +59,8 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Next Up
 
-- Add route protection for all routes except /sign-in, /sign-up
 - Build editor canvas and React Flow integration
-- Add any additional UI components needed (forms, tables, etc.)
 - Set up canvas theme for React Flow nodes
-- Implement starter design templates library
 
 ## Open Questions
 

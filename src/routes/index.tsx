@@ -14,9 +14,9 @@ function Home() {
 		if (!isLoaded) return;
 
 		if (isSignedIn) {
-			navigate({ to: "/editor" });
+			navigate({ to: "/editor", replace: true });
 		} else {
-			navigate({ to: "/sign-in" });
+			navigate({ to: "/sign-in", replace: true });
 		}
 	}, [isLoaded, isSignedIn, navigate]);
 

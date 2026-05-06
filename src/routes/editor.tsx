@@ -1,9 +1,17 @@
 import { EditorNavbar } from "#/components/editor/editor-navbar";
 import { ProjectSidebar } from "#/components/editor/project-sidebar";
-import { createFileRoute } from "@tanstack/react-router";
+import { auth } from "@clerk/tanstack-react-start/server";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 
 export const Route = createFileRoute("/editor")({
+	beforeLoad: async ({ context }) => {
+		const { isAuthenticated } = await auth(context);
+
+		if (!isAuthenticated) {
+			throw redirect({ to: "/sign-in" });
+		}
+	},
 	component: EditorPage,
 });
 

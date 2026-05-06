@@ -1,10 +1,9 @@
-"use client";
-
 import { ClerkProvider } from "@clerk/tanstack-react-start";
 import { dark } from "@clerk/ui/themes";
+import type { ReactNode } from "react";
 
 interface ClerkProviderWrapperProps {
-	children: React.ReactNode;
+	children: ReactNode;
 }
 
 export default function ClerkProviderWrapper({
