@@ -29,6 +29,8 @@ export function ProjectSidebar({ isOpen, onClose }: ProjectSidebarProps) {
 
 			{/* Sidebar */}
 			<aside
+				aria-hidden={!isOpen}
+				inert={!isOpen}
 				className={`fixed left-0 top-0 bottom-0 z-40 w-64 bg-background border-r border-border flex flex-col transform transition-transform duration-300 ease-in-out ${
 					isOpen ? "translate-x-0" : "-translate-x-full"
 				}`}
@@ -41,6 +43,7 @@ export function ProjectSidebar({ isOpen, onClose }: ProjectSidebarProps) {
 						size="sm"
 						onClick={onClose}
 						className="p-1"
+						tabIndex={isOpen ? 0 : -1}
 						aria-label="Close sidebar"
 					>
 						<X className="size-4" />
@@ -55,10 +58,18 @@ export function ProjectSidebar({ isOpen, onClose }: ProjectSidebarProps) {
 						className="flex-1 flex flex-col px-2 pt-2"
 					>
 						<TabsList className="w-full">
-							<TabsTrigger value="my-projects" className="flex-1">
+							<TabsTrigger
+								value="my-projects"
+								className="flex-1"
+								tabIndex={isOpen ? 0 : -1}
+							>
 								My Projects
 							</TabsTrigger>
-							<TabsTrigger value="shared" className="flex-1">
+							<TabsTrigger
+								value="shared"
+								className="flex-1"
+								tabIndex={isOpen ? 0 : -1}
+							>
 								Shared
 							</TabsTrigger>
 						</TabsList>
@@ -67,6 +78,7 @@ export function ProjectSidebar({ isOpen, onClose }: ProjectSidebarProps) {
 						<TabsContent
 							value="my-projects"
 							className="flex-1 flex items-center justify-center"
+							tabIndex={isOpen ? 0 : -1}
 						>
 							<div className="text-center">
 								<p className="text-sm text-muted-foreground">No projects yet</p>
@@ -80,6 +92,7 @@ export function ProjectSidebar({ isOpen, onClose }: ProjectSidebarProps) {
 						<TabsContent
 							value="shared"
 							className="flex-1 flex items-center justify-center"
+							tabIndex={isOpen ? 0 : -1}
 						>
 							<div className="text-center">
 								<p className="text-sm text-muted-foreground">
@@ -95,7 +108,7 @@ export function ProjectSidebar({ isOpen, onClose }: ProjectSidebarProps) {
 
 				{/* New Project Button */}
 				<div className="px-4 py-4 border-t border-border">
-					<Button className="w-full" size="sm">
+					<Button className="w-full" size="sm" tabIndex={isOpen ? 0 : -1}>
 						<Plus className="size-4" />
 						New Project
 					</Button>

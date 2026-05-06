@@ -33,6 +33,9 @@ Update this file whenever the current phase, active feature, or implementation s
   - Header with Projects title and close button
   - Tabs for "My Projects" and "Shared" with empty state placeholders
   - Full-width New Project button with Plus icon
+- ✅ Hardened project sidebar focus behavior when closed
+  - Added `aria-hidden` and `inert` to keep the mounted shell out of keyboard focus
+  - Removed sidebar controls from the tab order while closed
 - ✅ Set up dialog pattern (`components/editor/dialog-pattern.tsx`)
   - Reusable DialogPattern component with title, description, footer
   - Re-exports all dialog primitives for flexibility
