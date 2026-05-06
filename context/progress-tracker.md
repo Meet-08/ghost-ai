@@ -4,11 +4,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Design System & UI Setup
+- Editor Chrome Components & Layout
 
 ## Current Goal
 
-- Establish the design system foundation and ensure all UI components match the Ghost AI dark theme.
+- Build the base editor chrome components (navbar and sidebar) that frame every editor screen.
 
 ## Completed
 
@@ -22,6 +22,21 @@ Update this file whenever the current phase, active feature, or implementation s
 - ✅ Verified existing shadcn components (button, card, input, dialog, tabs, textarea, scroll-area)
   - All components use Tailwind design tokens (primary, secondary, muted, accent, etc.)
   - Components automatically use the dark theme via CSS custom properties
+- ✅ Created editor navbar component (`components/editor/editor-navbar.tsx`)
+  - Fixed-height top navbar with dark background and subtle border
+  - Left section with sidebar toggle button (PanelLeftOpen/PanelLeftClose icons)
+  - Center and right sections ready for future content
+  - TypeScript typed with sidebar state props
+- ✅ Created project sidebar component (`components/editor/project-sidebar.tsx`)
+  - Floats above canvas with overlay
+  - Slides in from left without pushing content
+  - Header with Projects title and close button
+  - Tabs for "My Projects" and "Shared" with empty state placeholders
+  - Full-width New Project button with Plus icon
+- ✅ Set up dialog pattern (`components/editor/dialog-pattern.tsx`)
+  - Reusable DialogPattern component with title, description, footer
+  - Re-exports all dialog primitives for flexibility
+  - Ready for future dialog implementations
 
 ## In Progress
 
@@ -29,10 +44,10 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Next Up
 
+- Build editor canvas and React Flow integration
 - Add any additional UI components needed (forms, tables, etc.)
 - Set up canvas theme for React Flow nodes
 - Implement starter design templates library
-- Create project workspace layout
 
 ## Open Questions
 
