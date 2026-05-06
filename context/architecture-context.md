@@ -14,7 +14,7 @@
 
 ## System Boundaries
 
-- `app/api` — Authenticated request handlers: input validation, ownership checks, task triggering, and persistence.
+- `src/routes/api` — Authenticated request handlers: input validation, ownership checks, task triggering, and persistence.
 - `trigger` — Long-running background jobs: AI design generation and spec generation.
 - `lib` — Shared infrastructure: Prisma client, access control helpers, and utilities.
 - `components` — UI composition: canvas surfaces, sidebars, dialogs, and interactive elements.

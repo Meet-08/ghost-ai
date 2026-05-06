@@ -1,11 +1,24 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { useAuth } from "@clerk/tanstack-react-start";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 
-export const Route = createFileRoute("/")({ component: Home });
+export const Route = createFileRoute("/")({
+	component: Home,
+});
 
 function Home() {
-	return (
-		<div className="h-screen flex items-center justify-center">
-			<h1 className="text-4xl font-bold">Welcome to Ghost AI</h1>
-		</div>
-	);
+	const { isSignedIn, isLoaded } = useAuth();
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		if (!isLoaded) return;
+
+		if (isSignedIn) {
+			navigate({ to: "/editor" });
+		} else {
+			navigate({ to: "/sign-in" });
+		}
+	}, [isLoaded, isSignedIn, navigate]);
+
+	return null;
 }

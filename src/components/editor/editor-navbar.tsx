@@ -1,4 +1,5 @@
 import { Button } from "#/components/ui/button.tsx";
+import { UserButton } from "@clerk/tanstack-react-start";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
 interface EditorNavbarProps {
@@ -35,7 +36,9 @@ export function EditorNavbar({
 			</div>
 
 			{/* Right Section */}
-			<div className="flex items-center gap-2">{/* Empty for now */}</div>
+			<div className="flex items-center gap-2">
+				<UserButton />
+			</div>
 		</nav>
 	);
 }

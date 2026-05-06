@@ -4,11 +4,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Editor Chrome Components & Layout
+- Editor Canvas & React Flow Integration
 
 ## Current Goal
 
-- Build the base editor chrome components (navbar and sidebar) that frame every editor screen.
+- Build the editor canvas using React Flow with node-based workflow visualization.
 
 ## Completed
 
@@ -27,6 +27,7 @@ Update this file whenever the current phase, active feature, or implementation s
   - Left section with sidebar toggle button (PanelLeftOpen/PanelLeftClose icons)
   - Center and right sections ready for future content
   - TypeScript typed with sidebar state props
+  - Added UserButton for profile and logout
 - ✅ Created project sidebar component (`components/editor/project-sidebar.tsx`)
   - Floats above canvas with overlay
   - Slides in from left without pushing content
@@ -40,6 +41,17 @@ Update this file whenever the current phase, active feature, or implementation s
   - Reusable DialogPattern component with title, description, footer
   - Re-exports all dialog primitives for flexibility
   - Ready for future dialog implementations
+- ✅ Implemented Clerk authentication
+  - Installed @clerk/ui for Clerk components
+  - Created ClerkProvider wrapper with dark theme in `integrations/clerk/provider.tsx`
+  - Built sign-in page (`/sign-in`) with responsive two-panel layout
+  - Built sign-up page (`/sign-up`) with responsive two-panel layout
+  - Created editor page (`/editor`) with navbar, sidebar, and canvas placeholder
+  - Set up root redirect logic: authenticated users → /editor, unauthenticated → /sign-in
+  - Integrated UserButton into editor navbar for profile management and logout
+  - Used Clerk's dark theme from @clerk/ui/themes as base
+  - Applied CSS custom properties for form styling (no hardcoded colors)
+  - Leveraged clerkMiddleware() in start.ts for server-side auth handling
 
 ## In Progress
 
@@ -47,6 +59,7 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Next Up
 
+- Add route protection for all routes except /sign-in, /sign-up
 - Build editor canvas and React Flow integration
 - Add any additional UI components needed (forms, tables, etc.)
 - Set up canvas theme for React Flow nodes
@@ -70,3 +83,8 @@ Update this file whenever the current phase, active feature, or implementation s
 - Design system colors follow the UI context specification exactly
 - All components use design tokens, no hardcoded colors
 - Focus rings implemented for accessibility (2px solid cyan accent)
+- Clerk integration complete: dark theme applied with CSS custom properties
+- Auth routing implemented with client-side redirect logic (useAuth + useNavigate)
+- ClerkProvider wraps root with dark theme and afterSignOutUrl callback
+- Public routes: /sign-in, /sign-up; protected: /, /editor (all others by default)
+- UserButton integrated into editor navbar for user profile and logout

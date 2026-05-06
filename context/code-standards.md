@@ -16,14 +16,13 @@
 
 ## TanStack Start
 
-- Use `.server.ts` / `.server.tsx` for server-side components and logic.
-- Use `.client.ts` / `.client.tsx` for client-side components that need browser interactivity, hooks, or real-time state.
+- Use `createServerFn()` for server-side components and logic.
 - Keep route handlers focused on a single responsibility.
 - Long-running work belongs in background tasks, not in request handlers.
 
 ## Styling
 
-- Use CSS custom property tokens defined in `globals.css` — no raw Tailwind color classes like `zinc-*` or hardcoded hex values.
+- Use CSS custom property tokens defined in `styles.css` — no raw Tailwind color classes like `zinc-*` or hardcoded hex values.
 - Reference tokens through their Tailwind utility names: `bg-base`, `text-copy-primary`, `border-surface-border`, `text-brand`, etc.
 - Maintain the border radius scale: `rounded-xl` for small elements, `rounded-2xl` for cards, `rounded-3xl` for modals.
 
@@ -46,5 +45,5 @@
 - `lib/` — shared infrastructure: Prisma client, auth helpers, utilities.
 - `trigger/` — all durable background tasks and AI workflows.
 - `components/` — UI composition only; no business logic.
-- `app/api/` — route handlers for auth, triggering, and persistence.
+- `src/routes/api/` — route handlers for auth, triggering, and persistence.
 - Name files after the responsibility they contain, not the technology.
