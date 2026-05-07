@@ -6,10 +6,10 @@ import {
 	TabsTrigger,
 } from "#/components/ui/tabs.tsx";
 import { PencilLine, Plus, Trash2, X } from "lucide-react";
-import type { KeyboardEvent } from "react";
 import { useState } from "react";
 
 import type { ProjectItem } from "#/hooks/use-project-management";
+import { Link } from "@tanstack/react-router";
 
 interface ProjectSidebarProps {
 	isOpen: boolean;
@@ -33,19 +33,12 @@ export function ProjectSidebar({
 	onDeleteProject,
 }: ProjectSidebarProps) {
 	const [activeTab, setActiveTab] = useState("my-projects");
-	// All projects in the current implementation are owned by the user
-	const ownedProjects = projects;
-	const sharedProjects: ProjectItem[] = [];
-
-	function handleProjectKeyDown(
-		event: KeyboardEvent<HTMLButtonElement>,
-		projectId: string,
-	) {
-		if (event.key === "Enter" || event.key === " ") {
-			event.preventDefault();
-			onSelectProject(projectId);
-		}
-	}
+	const ownedProjects = projects.filter(
+		(project) => project.access !== "collaborator",
+	);
+	const sharedProjects = projects.filter(
+		(project) => project.access === "collaborator",
+	);
 
 	function renderProjectList(projectList: ProjectItem[], showActions: boolean) {
 		if (projectList.length === 0) {
@@ -71,54 +64,56 @@ export function ProjectSidebar({
 					const isSelected = project.id === selectedProjectId;
 
 					return (
-						<div
+						<Link
 							key={project.id}
-							className={`group relative rounded-2xl border transition-colors ${
-								isSelected
-									? "border-primary bg-accent/10"
-									: "border-border bg-card hover:border-border/80 hover:bg-secondary/40"
-							}`}
+							to="/editor/$projectId"
+							params={{ projectId: project.id }}
+							className="block"
+							onClick={() => onSelectProject(project.id)}
 						>
-							<button
-								type="button"
-								className="block w-full rounded-2xl px-4 py-3 pr-20 text-left outline-none"
-								onClick={() => onSelectProject(project.id)}
-								onKeyDown={(event) => handleProjectKeyDown(event, project.id)}
+							<div
+								className={`group relative rounded-2xl border transition-colors ${
+									isSelected
+										? "border-primary bg-accent/10"
+										: "border-border bg-card hover:border-border/80 hover:bg-secondary/40"
+								}`}
 							>
-								<p className="truncate text-sm font-medium text-foreground">
-									{project.name}
-								</p>
-							</button>
-
-							{showActions && (
-								<div className="absolute top-1/2 right-3 flex -translate-y-1/2 items-center gap-1 opacity-100 transition-opacity group-hover:opacity-100 md:opacity-0 md:group-hover:opacity-100">
-									<Button
-										type="button"
-										variant="ghost"
-										size="icon-sm"
-										onClick={(event) => {
-											event.stopPropagation();
-											onRenameProject(project.id);
-										}}
-										aria-label={`Rename ${project.name}`}
-									>
-										<PencilLine className="size-4" />
-									</Button>
-									<Button
-										type="button"
-										variant="ghost"
-										size="icon-sm"
-										onClick={(event) => {
-											event.stopPropagation();
-											onDeleteProject(project.id);
-										}}
-										aria-label={`Delete ${project.name}`}
-									>
-										<Trash2 className="size-4" />
-									</Button>
+								<div className="block w-full rounded-2xl px-4 py-3 pr-20 text-left">
+									<p className="truncate text-sm font-medium text-foreground">
+										{project.name}
+									</p>
 								</div>
-							)}
-						</div>
+
+								{showActions && (
+									<div className="absolute top-1/2 right-3 flex -translate-y-1/2 items-center gap-1 opacity-100 transition-opacity group-hover:opacity-100 md:opacity-0 md:group-hover:opacity-100">
+										<Button
+											type="button"
+											variant="ghost"
+											size="icon-sm"
+											onClick={(event) => {
+												event.stopPropagation();
+												onRenameProject(project.id);
+											}}
+											aria-label={`Rename ${project.name}`}
+										>
+											<PencilLine className="size-4" />
+										</Button>
+										<Button
+											type="button"
+											variant="ghost"
+											size="icon-sm"
+											onClick={(event) => {
+												event.stopPropagation();
+												onDeleteProject(project.id);
+											}}
+											aria-label={`Delete ${project.name}`}
+										>
+											<Trash2 className="size-4" />
+										</Button>
+									</div>
+								)}
+							</div>
+						</Link>
 					);
 				})}
 			</div>

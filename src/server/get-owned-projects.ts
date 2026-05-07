@@ -1,23 +1,18 @@
-import { prisma } from "#/db";
-import { auth } from "@clerk/tanstack-react-start/server";
+import {
+	getCurrentClerkIdentity,
+	listProjectsByAccess,
+} from "#/lib/project-access";
 import { createServerFn } from "@tanstack/react-start";
 
 export const getOwnedProjects = createServerFn({ method: "GET" }).handler(
 	async () => {
-		const { isAuthenticated, userId } = await auth();
+		const identity = await getCurrentClerkIdentity();
 
-		if (!isAuthenticated || !userId) {
+		if (!identity) {
 			return { projects: [] };
 		}
 
-		const projects = await prisma.project.findMany({
-			where: { ownerId: userId },
-			orderBy: { createdAt: "desc" },
-			select: {
-				id: true,
-				name: true,
-			},
-		});
+		const projects = await listProjectsByAccess(identity);
 
 		return { projects };
 	},
