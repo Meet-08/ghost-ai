@@ -74,7 +74,12 @@ export async function listProjectCollaborators(projectId: string) {
 	const emails = collaborators.map((collaborator) =>
 		normalizeEmail(collaborator.email),
 	);
-	const usersByEmail = await getUsersByEmail(emails);
+	let usersByEmail: Map<string, ClerkUserProfile>;
+	try {
+		usersByEmail = await getUsersByEmail(emails);
+	} catch {
+		usersByEmail = new Map<string, ClerkUserProfile>();
+	}
 
 	return collaborators.map((collaborator): CollaboratorProfile => {
 		const email = normalizeEmail(collaborator.email);

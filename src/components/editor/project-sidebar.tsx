@@ -6,7 +6,6 @@ import {
 	TabsTrigger,
 } from "#/components/ui/tabs.tsx";
 import { PencilLine, Plus, Trash2, X } from "lucide-react";
-import type { KeyboardEvent } from "react";
 import { useState } from "react";
 
 import type { ProjectItem } from "#/hooks/use-project-management";
@@ -41,16 +40,6 @@ export function ProjectSidebar({
 		(project) => project.access === "collaborator",
 	);
 
-	function handleProjectKeyDown(
-		event: KeyboardEvent<HTMLButtonElement>,
-		projectId: string,
-	) {
-		if (event.key === "Enter" || event.key === " ") {
-			event.preventDefault();
-			onSelectProject(projectId);
-		}
-	}
-
 	function renderProjectList(projectList: ProjectItem[], showActions: boolean) {
 		if (projectList.length === 0) {
 			return (
@@ -80,6 +69,7 @@ export function ProjectSidebar({
 							to="/editor/$projectId"
 							params={{ projectId: project.id }}
 							className="block"
+							onClick={() => onSelectProject(project.id)}
 						>
 							<div
 								className={`group relative rounded-2xl border transition-colors ${
@@ -88,16 +78,11 @@ export function ProjectSidebar({
 										: "border-border bg-card hover:border-border/80 hover:bg-secondary/40"
 								}`}
 							>
-								<button
-									type="button"
-									className="block w-full rounded-2xl px-4 py-3 pr-20 text-left outline-none"
-									onClick={() => onSelectProject(project.id)}
-									onKeyDown={(event) => handleProjectKeyDown(event, project.id)}
-								>
+								<div className="block w-full rounded-2xl px-4 py-3 pr-20 text-left">
 									<p className="truncate text-sm font-medium text-foreground">
 										{project.name}
 									</p>
-								</button>
+								</div>
 
 								{showActions && (
 									<div className="absolute top-1/2 right-3 flex -translate-y-1/2 items-center gap-1 opacity-100 transition-opacity group-hover:opacity-100 md:opacity-0 md:group-hover:opacity-100">
