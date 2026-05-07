@@ -4,6 +4,7 @@ import { useState } from "react";
 export interface ProjectItem {
 	id: string;
 	name: string;
+	access?: "owner" | "collaborator";
 }
 
 interface ProjectDialogState {
@@ -23,15 +24,19 @@ function slugifyProjectName(name: string) {
 
 export interface UseProjectManagementProps {
 	initialProjects: ProjectItem[];
+	initialSelectedProjectId?: string;
+	onProjectCreated?: (projectId: string) => Promise<void> | void;
 }
 
 export function useProjectManagement({
 	initialProjects,
+	initialSelectedProjectId,
+	onProjectCreated,
 }: UseProjectManagementProps) {
 	const navigate = useNavigate();
 	const [projects, setProjects] = useState<ProjectItem[]>(initialProjects);
 	const [selectedProjectId, setSelectedProjectId] = useState(
-		initialProjects[0]?.id ?? "",
+		initialSelectedProjectId ?? initialProjects[0]?.id ?? "",
 	);
 	const [dialogState, setDialogState] = useState<ProjectDialogState>({
 		mode: null,
@@ -123,6 +128,7 @@ export function useProjectManagement({
 			setCreateProjectName("");
 			setRenameProjectName("");
 			setIsSubmitting(false);
+			await onProjectCreated?.(newProject.id);
 		} catch (err) {
 			console.error("Failed to create project:", err);
 			setIsSubmitting(false);

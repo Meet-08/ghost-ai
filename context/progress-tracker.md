@@ -4,11 +4,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Backend Project APIs
+- Editor Workspace Shell
 
 ## Current Goal
 
-- Implement authenticated project API routes for list/create/rename/delete.
+- Resolve pre-existing verification cleanup before the next editor canvas feature.
 
 ## Completed
 
@@ -66,13 +66,40 @@ Update this file whenever the current phase, active feature, or implementation s
   - Added consistent JSON auth helpers for `401 Unauthorized` and `403 Forbidden` responses
   - Verified the implementation compiles successfully with `bun run build`
 
+- ✅ Implemented `/editor/[roomId]` workspace shell
+  - Added server-side workspace loading with Clerk identity lookup and project access checks
+  - Redirected unauthenticated users to `/sign-in` before rendering protected workspace data
+  - Added owner/collaborator access helper logic in `src/lib/project-access.ts`
+  - Added `AccessDenied` for missing or unauthorized projects
+  - Rendered full-viewport workspace with project name navbar, share action, AI sidebar toggle, left project sidebar, canvas placeholder, and AI placeholder sidebar
+  - Highlighted the current room in the project sidebar and preserved project dialogs in the workspace shell
+  - Verified new workspace code with `bunx tsc --noEmit`; remaining errors are pre-existing `prisma/seed.ts` references to a removed `todo` model
+
+- ✅ Fixed `/editor/$projectId` nested route rendering so child workspace routes render instead of the `/editor` home screen
+  - Added an outlet handoff in `src/routes/editor.tsx` for non-`/editor` paths
+  - Confirmed targeted Biome checks pass for the affected route/access files
+  - Confirmed `bunx tsc --noEmit` remains blocked only by the pre-existing `prisma/seed.ts` `todo` model mismatch
+
+- ✅ Implemented editor share dialog
+  - Added a navbar `Share` action that opens the project share dialog from `/editor/$projectId`
+  - Added collaborator listing, invite, and remove API logic under `/api/projects/$projectId/collaborators`
+  - Enforced authenticated project access for listing and owner-only access for invite/remove
+  - Enriched collaborator emails with Clerk display names and avatar images when available
+  - Added owner invite/remove controls, collaborator read-only access, and copy-link `Copied!` feedback
+  - Verified targeted Biome checks pass and `bun run build` passes
+
+- ✅ Fixed shared projects missing from the `/editor` sidebar
+  - Updated the `/editor` loader to use access-aware project listing instead of owner-only loading
+  - Updated `GET /api/projects` to return both owned and collaborator projects with access metadata
+  - Kept sidebar tab filtering unchanged: owner projects appear under "My Projects", collaborator projects under "Shared"
+
 ## In Progress
 
-- Wire editor project dialogs/sidebar to the real project API
+- Resolve pre-existing `prisma/seed.ts` generated-client mismatch so full TypeScript verification is clean
 
 ## Next Up
 
-- Resume editor canvas and React Flow integration
+- Resume editor canvas and React Flow integration after cleaning the seed verification issue
 
 ## Open Questions
 
@@ -88,6 +115,10 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Session Notes
 
+- Fixed `/editor/$projectId` rendering by allowing the `/editor` parent route to render its child outlet for nested workspace URLs, so unauthorized project URLs can reach `AccessDenied`.
+- Completed feature spec `08-editor-workspace-shell.md`: shell/access behavior is implemented; full build is blocked in the sandbox by Bun/Vite native dependency access, and `bunx tsc --noEmit` is blocked only by pre-existing seed errors.
+- Completed feature spec `09-share-dialog.md`: share dialog, collaborator APIs, Clerk profile enrichment, and owner/collaborator permission split are implemented; `bun run build` passes when run outside the sandbox.
+- Fixed `/editor` home sidebar project loading so shared collaborator projects appear in the Shared tab.
 - Geist fonts imported from @fontsource packages for proper font loading
 - Design system colors follow the UI context specification exactly
 - All components use design tokens, no hardcoded colors

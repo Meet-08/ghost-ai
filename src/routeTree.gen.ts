@@ -16,8 +16,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SignInIndexRouteImport } from './routes/sign-in/index'
 import { Route as SignUpSplatRouteImport } from './routes/sign-up/$'
 import { Route as SignInSplatRouteImport } from './routes/sign-in/$'
+import { Route as EditorProjectIdRouteImport } from './routes/editor/$projectId'
 import { Route as ApiProjectsRouteImport } from './routes/api/projects'
 import { Route as ApiProjectsProjectIdRouteImport } from './routes/api/projects/$projectId'
+import { Route as ApiProjectsProjectIdCollaboratorsRouteImport } from './routes/api/projects/$projectId/collaborators'
 
 const SignUpRoute = SignUpRouteImport.update({
   id: '/sign-up',
@@ -54,6 +56,11 @@ const SignInSplatRoute = SignInSplatRouteImport.update({
   path: '/$',
   getParentRoute: () => SignInRoute,
 } as any)
+const EditorProjectIdRoute = EditorProjectIdRouteImport.update({
+  id: '/$projectId',
+  path: '/$projectId',
+  getParentRoute: () => EditorRoute,
+} as any)
 const ApiProjectsRoute = ApiProjectsRouteImport.update({
   id: '/api/projects',
   path: '/api/projects',
@@ -64,39 +71,51 @@ const ApiProjectsProjectIdRoute = ApiProjectsProjectIdRouteImport.update({
   path: '/$projectId',
   getParentRoute: () => ApiProjectsRoute,
 } as any)
+const ApiProjectsProjectIdCollaboratorsRoute =
+  ApiProjectsProjectIdCollaboratorsRouteImport.update({
+    id: '/collaborators',
+    path: '/collaborators',
+    getParentRoute: () => ApiProjectsProjectIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/editor': typeof EditorRoute
+  '/editor': typeof EditorRouteWithChildren
   '/sign-in': typeof SignInRouteWithChildren
   '/sign-up': typeof SignUpRouteWithChildren
   '/api/projects': typeof ApiProjectsRouteWithChildren
+  '/editor/$projectId': typeof EditorProjectIdRoute
   '/sign-in/$': typeof SignInSplatRoute
   '/sign-up/$': typeof SignUpSplatRoute
   '/sign-in/': typeof SignInIndexRoute
-  '/api/projects/$projectId': typeof ApiProjectsProjectIdRoute
+  '/api/projects/$projectId': typeof ApiProjectsProjectIdRouteWithChildren
+  '/api/projects/$projectId/collaborators': typeof ApiProjectsProjectIdCollaboratorsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/editor': typeof EditorRoute
+  '/editor': typeof EditorRouteWithChildren
   '/sign-up': typeof SignUpRouteWithChildren
   '/api/projects': typeof ApiProjectsRouteWithChildren
+  '/editor/$projectId': typeof EditorProjectIdRoute
   '/sign-in/$': typeof SignInSplatRoute
   '/sign-up/$': typeof SignUpSplatRoute
   '/sign-in': typeof SignInIndexRoute
-  '/api/projects/$projectId': typeof ApiProjectsProjectIdRoute
+  '/api/projects/$projectId': typeof ApiProjectsProjectIdRouteWithChildren
+  '/api/projects/$projectId/collaborators': typeof ApiProjectsProjectIdCollaboratorsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/editor': typeof EditorRoute
+  '/editor': typeof EditorRouteWithChildren
   '/sign-in': typeof SignInRouteWithChildren
   '/sign-up': typeof SignUpRouteWithChildren
   '/api/projects': typeof ApiProjectsRouteWithChildren
+  '/editor/$projectId': typeof EditorProjectIdRoute
   '/sign-in/$': typeof SignInSplatRoute
   '/sign-up/$': typeof SignUpSplatRoute
   '/sign-in/': typeof SignInIndexRoute
-  '/api/projects/$projectId': typeof ApiProjectsProjectIdRoute
+  '/api/projects/$projectId': typeof ApiProjectsProjectIdRouteWithChildren
+  '/api/projects/$projectId/collaborators': typeof ApiProjectsProjectIdCollaboratorsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -106,20 +125,24 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/api/projects'
+    | '/editor/$projectId'
     | '/sign-in/$'
     | '/sign-up/$'
     | '/sign-in/'
     | '/api/projects/$projectId'
+    | '/api/projects/$projectId/collaborators'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/editor'
     | '/sign-up'
     | '/api/projects'
+    | '/editor/$projectId'
     | '/sign-in/$'
     | '/sign-up/$'
     | '/sign-in'
     | '/api/projects/$projectId'
+    | '/api/projects/$projectId/collaborators'
   id:
     | '__root__'
     | '/'
@@ -127,15 +150,17 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/api/projects'
+    | '/editor/$projectId'
     | '/sign-in/$'
     | '/sign-up/$'
     | '/sign-in/'
     | '/api/projects/$projectId'
+    | '/api/projects/$projectId/collaborators'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  EditorRoute: typeof EditorRoute
+  EditorRoute: typeof EditorRouteWithChildren
   SignInRoute: typeof SignInRouteWithChildren
   SignUpRoute: typeof SignUpRouteWithChildren
   ApiProjectsRoute: typeof ApiProjectsRouteWithChildren
@@ -192,6 +217,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignInSplatRouteImport
       parentRoute: typeof SignInRoute
     }
+    '/editor/$projectId': {
+      id: '/editor/$projectId'
+      path: '/$projectId'
+      fullPath: '/editor/$projectId'
+      preLoaderRoute: typeof EditorProjectIdRouteImport
+      parentRoute: typeof EditorRoute
+    }
     '/api/projects': {
       id: '/api/projects'
       path: '/api/projects'
@@ -206,8 +238,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiProjectsProjectIdRouteImport
       parentRoute: typeof ApiProjectsRoute
     }
+    '/api/projects/$projectId/collaborators': {
+      id: '/api/projects/$projectId/collaborators'
+      path: '/collaborators'
+      fullPath: '/api/projects/$projectId/collaborators'
+      preLoaderRoute: typeof ApiProjectsProjectIdCollaboratorsRouteImport
+      parentRoute: typeof ApiProjectsProjectIdRoute
+    }
   }
 }
+
+interface EditorRouteChildren {
+  EditorProjectIdRoute: typeof EditorProjectIdRoute
+}
+
+const EditorRouteChildren: EditorRouteChildren = {
+  EditorProjectIdRoute: EditorProjectIdRoute,
+}
+
+const EditorRouteWithChildren =
+  EditorRoute._addFileChildren(EditorRouteChildren)
 
 interface SignInRouteChildren {
   SignInSplatRoute: typeof SignInSplatRoute
@@ -233,12 +283,24 @@ const SignUpRouteChildren: SignUpRouteChildren = {
 const SignUpRouteWithChildren =
   SignUpRoute._addFileChildren(SignUpRouteChildren)
 
+interface ApiProjectsProjectIdRouteChildren {
+  ApiProjectsProjectIdCollaboratorsRoute: typeof ApiProjectsProjectIdCollaboratorsRoute
+}
+
+const ApiProjectsProjectIdRouteChildren: ApiProjectsProjectIdRouteChildren = {
+  ApiProjectsProjectIdCollaboratorsRoute:
+    ApiProjectsProjectIdCollaboratorsRoute,
+}
+
+const ApiProjectsProjectIdRouteWithChildren =
+  ApiProjectsProjectIdRoute._addFileChildren(ApiProjectsProjectIdRouteChildren)
+
 interface ApiProjectsRouteChildren {
-  ApiProjectsProjectIdRoute: typeof ApiProjectsProjectIdRoute
+  ApiProjectsProjectIdRoute: typeof ApiProjectsProjectIdRouteWithChildren
 }
 
 const ApiProjectsRouteChildren: ApiProjectsRouteChildren = {
-  ApiProjectsProjectIdRoute: ApiProjectsProjectIdRoute,
+  ApiProjectsProjectIdRoute: ApiProjectsProjectIdRouteWithChildren,
 }
 
 const ApiProjectsRouteWithChildren = ApiProjectsRoute._addFileChildren(
@@ -247,7 +309,7 @@ const ApiProjectsRouteWithChildren = ApiProjectsRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  EditorRoute: EditorRoute,
+  EditorRoute: EditorRouteWithChildren,
   SignInRoute: SignInRouteWithChildren,
   SignUpRoute: SignUpRouteWithChildren,
   ApiProjectsRoute: ApiProjectsRouteWithChildren,

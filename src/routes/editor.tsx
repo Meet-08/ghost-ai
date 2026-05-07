@@ -1,12 +1,11 @@
-import { DialogPattern } from "#/components/editor/dialog-pattern.tsx";
 import { EditorNavbar } from "#/components/editor/editor-navbar";
+import { ProjectDialogs } from "#/components/editor/project-dialogs";
 import { ProjectSidebar } from "#/components/editor/project-sidebar";
 import { Button } from "#/components/ui/button.tsx";
-import { Input } from "#/components/ui/input.tsx";
 import { useProjectManagement } from "#/hooks/use-project-management";
 import { getOwnedProjects } from "#/server/get-owned-projects";
 import { requireAuth } from "#/server/require-auth";
-import { createFileRoute } from "@tanstack/react-router";
+import { Outlet, createFileRoute, useLocation } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 
@@ -17,6 +16,7 @@ export const Route = createFileRoute("/editor")({
 });
 
 function EditorPage() {
+	const location = useLocation();
 	const loaderData = Route.useLoaderData();
 	const {
 		closeDialog,
@@ -41,6 +41,10 @@ function EditorPage() {
 		initialProjects: loaderData.projects,
 	});
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+	if (location.pathname !== "/editor") {
+		return <Outlet />;
+	}
 
 	return (
 		<>
@@ -83,146 +87,20 @@ function EditorPage() {
 				</main>
 			</div>
 
-			<DialogPattern
-				title="Create Project"
-				description="Enter a project name and review the slug preview before creating it."
-				open={dialogState.mode === "create"}
-				onOpenChange={(open) => {
-					if (!open) {
-						closeDialog();
-					}
-				}}
-				footer={
-					<>
-						<Button type="button" variant="outline" onClick={closeDialog}>
-							Cancel
-						</Button>
-						<Button
-							type="submit"
-							form="create-project-form"
-							disabled={isSubmitting || !createProjectName.trim()}
-						>
-							Create Project
-						</Button>
-					</>
-				}
-			>
-				<form
-					id="create-project-form"
-					className="space-y-4"
-					onSubmit={createProject}
-				>
-					<div className="space-y-2 text-left">
-						<label
-							htmlFor="create-project-name"
-							className="text-sm font-medium text-foreground"
-						>
-							Project name
-						</label>
-						<Input
-							id="create-project-name"
-							value={createProjectName}
-							onChange={(event) => setCreateProjectName(event.target.value)}
-							autoFocus
-							placeholder="e.g. Payments Workspace"
-						/>
-					</div>
-					<div className="rounded-2xl border border-border bg-card px-4 py-3 text-left">
-						<p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-							Slug preview
-						</p>
-						<p className="mt-2 font-mono text-sm text-foreground">
-							{createSlugPreview}
-						</p>
-					</div>
-				</form>
-			</DialogPattern>
-
-			<DialogPattern
-				title="Rename Project"
-				description={`Rename the current project, ${dialogProject ? `"${dialogProject.name}"` : "this project"}.`}
-				open={dialogState.mode === "rename"}
-				onOpenChange={(open) => {
-					if (!open) {
-						closeDialog();
-					}
-				}}
-				footer={
-					<>
-						<Button type="button" variant="outline" onClick={closeDialog}>
-							Cancel
-						</Button>
-						<Button
-							type="submit"
-							form="rename-project-form"
-							disabled={isSubmitting || !renameProjectName.trim()}
-						>
-							Save Changes
-						</Button>
-					</>
-				}
-			>
-				<form
-					id="rename-project-form"
-					className="space-y-4"
-					onSubmit={renameProject}
-				>
-					<div className="space-y-2 text-left">
-						<label
-							htmlFor="rename-project-name"
-							className="text-sm font-medium text-foreground"
-						>
-							Project name
-						</label>
-						<Input
-							id="rename-project-name"
-							value={renameProjectName}
-							onChange={(event) => setRenameProjectName(event.target.value)}
-							autoFocus
-						/>
-					</div>
-				</form>
-			</DialogPattern>
-
-			<DialogPattern
-				title="Delete Project"
-				description={
-					dialogProject
-						? `Delete "${dialogProject.name}" from the project list. This action cannot be undone.`
-						: "Delete this project from the project list. This action cannot be undone."
-				}
-				open={dialogState.mode === "delete"}
-				onOpenChange={(open) => {
-					if (!open) {
-						closeDialog();
-					}
-				}}
-				footer={
-					<>
-						<Button type="button" variant="outline" onClick={closeDialog}>
-							Cancel
-						</Button>
-						<Button
-							type="submit"
-							form="delete-project-form"
-							variant="destructive"
-							disabled={isSubmitting}
-						>
-							Delete Project
-						</Button>
-					</>
-				}
-			>
-				<form
-					id="delete-project-form"
-					className="space-y-4"
-					onSubmit={deleteProject}
-				>
-					<p className="text-left text-sm text-muted-foreground">
-						This permanently removes the project from the project list.
-					</p>
-				</form>
-			</DialogPattern>
+			<ProjectDialogs
+				createProjectName={createProjectName}
+				createSlugPreview={createSlugPreview}
+				dialogProject={dialogProject}
+				dialogState={dialogState}
+				isSubmitting={isSubmitting}
+				renameProjectName={renameProjectName}
+				onClose={closeDialog}
+				onCreateProject={createProject}
+				onDeleteProject={deleteProject}
+				onRenameProject={renameProject}
+				onCreateProjectNameChange={setCreateProjectName}
+				onRenameProjectNameChange={setRenameProjectName}
+			/>
 		</>
 	);
 }

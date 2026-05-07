@@ -1,5 +1,9 @@
 import { prisma } from "#/db";
 import {
+	getCurrentClerkIdentity,
+	listProjectsByAccess,
+} from "#/lib/project-access";
+import {
 	getAuthenticatedUserId,
 	unauthorizedResponse,
 } from "#/server/api-auth";
@@ -16,16 +20,13 @@ export const Route = createFileRoute("/api/projects")({
 	server: {
 		handlers: {
 			GET: async () => {
-				const userId = await getAuthenticatedUserId();
+				const identity = await getCurrentClerkIdentity();
 
-				if (!userId) {
+				if (!identity) {
 					return unauthorizedResponse();
 				}
 
-				const projects = await prisma.project.findMany({
-					where: { ownerId: userId },
-					orderBy: { createdAt: "desc" },
-				});
+				const projects = await listProjectsByAccess(identity);
 
 				return Response.json({ projects });
 			},
