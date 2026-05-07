@@ -26,6 +26,7 @@
     "@modelcontextprotocol/sdk": "^1.27.1",
     "@prisma/adapter-pg": "^7.4.2",
     "@prisma/client": "^7.4.2",
+    "@prisma/extension-accelerate": "^3.0.1",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-devtools": "latest",
     "@tanstack/react-router": "latest",

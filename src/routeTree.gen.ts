@@ -16,6 +16,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SignInIndexRouteImport } from './routes/sign-in/index'
 import { Route as SignUpSplatRouteImport } from './routes/sign-up/$'
 import { Route as SignInSplatRouteImport } from './routes/sign-in/$'
+import { Route as ApiProjectsRouteImport } from './routes/api/projects'
+import { Route as ApiProjectsProjectIdRouteImport } from './routes/api/projects/$projectId'
 
 const SignUpRoute = SignUpRouteImport.update({
   id: '/sign-up',
@@ -52,23 +54,37 @@ const SignInSplatRoute = SignInSplatRouteImport.update({
   path: '/$',
   getParentRoute: () => SignInRoute,
 } as any)
+const ApiProjectsRoute = ApiProjectsRouteImport.update({
+  id: '/api/projects',
+  path: '/api/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiProjectsProjectIdRoute = ApiProjectsProjectIdRouteImport.update({
+  id: '/$projectId',
+  path: '/$projectId',
+  getParentRoute: () => ApiProjectsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/editor': typeof EditorRoute
   '/sign-in': typeof SignInRouteWithChildren
   '/sign-up': typeof SignUpRouteWithChildren
+  '/api/projects': typeof ApiProjectsRouteWithChildren
   '/sign-in/$': typeof SignInSplatRoute
   '/sign-up/$': typeof SignUpSplatRoute
   '/sign-in/': typeof SignInIndexRoute
+  '/api/projects/$projectId': typeof ApiProjectsProjectIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/editor': typeof EditorRoute
   '/sign-up': typeof SignUpRouteWithChildren
+  '/api/projects': typeof ApiProjectsRouteWithChildren
   '/sign-in/$': typeof SignInSplatRoute
   '/sign-up/$': typeof SignUpSplatRoute
   '/sign-in': typeof SignInIndexRoute
+  '/api/projects/$projectId': typeof ApiProjectsProjectIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -76,9 +92,11 @@ export interface FileRoutesById {
   '/editor': typeof EditorRoute
   '/sign-in': typeof SignInRouteWithChildren
   '/sign-up': typeof SignUpRouteWithChildren
+  '/api/projects': typeof ApiProjectsRouteWithChildren
   '/sign-in/$': typeof SignInSplatRoute
   '/sign-up/$': typeof SignUpSplatRoute
   '/sign-in/': typeof SignInIndexRoute
+  '/api/projects/$projectId': typeof ApiProjectsProjectIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -87,20 +105,32 @@ export interface FileRouteTypes {
     | '/editor'
     | '/sign-in'
     | '/sign-up'
+    | '/api/projects'
     | '/sign-in/$'
     | '/sign-up/$'
     | '/sign-in/'
+    | '/api/projects/$projectId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/editor' | '/sign-up' | '/sign-in/$' | '/sign-up/$' | '/sign-in'
+  to:
+    | '/'
+    | '/editor'
+    | '/sign-up'
+    | '/api/projects'
+    | '/sign-in/$'
+    | '/sign-up/$'
+    | '/sign-in'
+    | '/api/projects/$projectId'
   id:
     | '__root__'
     | '/'
     | '/editor'
     | '/sign-in'
     | '/sign-up'
+    | '/api/projects'
     | '/sign-in/$'
     | '/sign-up/$'
     | '/sign-in/'
+    | '/api/projects/$projectId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -108,6 +138,7 @@ export interface RootRouteChildren {
   EditorRoute: typeof EditorRoute
   SignInRoute: typeof SignInRouteWithChildren
   SignUpRoute: typeof SignUpRouteWithChildren
+  ApiProjectsRoute: typeof ApiProjectsRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -161,6 +192,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignInSplatRouteImport
       parentRoute: typeof SignInRoute
     }
+    '/api/projects': {
+      id: '/api/projects'
+      path: '/api/projects'
+      fullPath: '/api/projects'
+      preLoaderRoute: typeof ApiProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/projects/$projectId': {
+      id: '/api/projects/$projectId'
+      path: '/$projectId'
+      fullPath: '/api/projects/$projectId'
+      preLoaderRoute: typeof ApiProjectsProjectIdRouteImport
+      parentRoute: typeof ApiProjectsRoute
+    }
   }
 }
 
@@ -188,11 +233,24 @@ const SignUpRouteChildren: SignUpRouteChildren = {
 const SignUpRouteWithChildren =
   SignUpRoute._addFileChildren(SignUpRouteChildren)
 
+interface ApiProjectsRouteChildren {
+  ApiProjectsProjectIdRoute: typeof ApiProjectsProjectIdRoute
+}
+
+const ApiProjectsRouteChildren: ApiProjectsRouteChildren = {
+  ApiProjectsProjectIdRoute: ApiProjectsProjectIdRoute,
+}
+
+const ApiProjectsRouteWithChildren = ApiProjectsRoute._addFileChildren(
+  ApiProjectsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   EditorRoute: EditorRoute,
   SignInRoute: SignInRouteWithChildren,
   SignUpRoute: SignUpRouteWithChildren,
+  ApiProjectsRoute: ApiProjectsRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
