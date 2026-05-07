@@ -4,6 +4,7 @@ import { ProjectSidebar } from "#/components/editor/project-sidebar";
 import { Button } from "#/components/ui/button.tsx";
 import { Input } from "#/components/ui/input.tsx";
 import { useProjectManagement } from "#/hooks/use-project-management";
+import { getOwnedProjects } from "#/server/get-owned-projects";
 import { requireAuth } from "#/server/require-auth";
 import { createFileRoute } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
@@ -11,10 +12,12 @@ import { useState } from "react";
 
 export const Route = createFileRoute("/editor")({
 	beforeLoad: () => requireAuth(),
+	loader: async () => getOwnedProjects(),
 	component: EditorPage,
 });
 
 function EditorPage() {
+	const loaderData = Route.useLoaderData();
 	const {
 		closeDialog,
 		createProject,
@@ -34,7 +37,9 @@ function EditorPage() {
 		selectProject,
 		setCreateProjectName,
 		setRenameProjectName,
-	} = useProjectManagement();
+	} = useProjectManagement({
+		initialProjects: loaderData.projects,
+	});
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
 	return (
@@ -183,8 +188,8 @@ function EditorPage() {
 				title="Delete Project"
 				description={
 					dialogProject
-						? `Delete "${dialogProject.name}" from the mock project list. This action cannot be undone.`
-						: "Delete this project from the mock project list. This action cannot be undone."
+						? `Delete "${dialogProject.name}" from the project list. This action cannot be undone.`
+						: "Delete this project from the project list. This action cannot be undone."
 				}
 				open={dialogState.mode === "delete"}
 				onOpenChange={(open) => {
@@ -214,7 +219,7 @@ function EditorPage() {
 					onSubmit={deleteProject}
 				>
 					<p className="text-left text-sm text-muted-foreground">
-						This permanently removes the project from the mock list.
+						This permanently removes the project from the project list.
 					</p>
 				</form>
 			</DialogPattern>

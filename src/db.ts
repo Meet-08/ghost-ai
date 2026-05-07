@@ -14,7 +14,7 @@ function createPrismaClient() {
 	if (prismaDatabaseUrl.startsWith("prisma+postgres://")) {
 		return new PrismaClient({
 			accelerateUrl: prismaDatabaseUrl,
-		}).$extends(withAccelerate());
+		}).$extends(withAccelerate()) as unknown as PrismaClient;
 	}
 
 	const adapter = new PrismaPg({
@@ -24,7 +24,7 @@ function createPrismaClient() {
 	return new PrismaClient({ adapter });
 }
 
-type PrismaClientSingleton = ReturnType<typeof createPrismaClient>;
+type PrismaClientSingleton = PrismaClient;
 
 declare global {
 	var __prisma: PrismaClientSingleton | undefined;

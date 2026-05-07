@@ -1,43 +1,15 @@
+import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
 export interface ProjectItem {
 	id: string;
 	name: string;
-	slug: string;
-	access: "owner" | "collaborator";
 }
 
 interface ProjectDialogState {
 	mode: "create" | "rename" | "delete" | null;
 	projectId: string | null;
 }
-
-const initialProjects: ProjectItem[] = [
-	{
-		id: "project-edge-platform",
-		name: "Edge Platform",
-		slug: "edge-platform",
-		access: "owner",
-	},
-	{
-		id: "project-api-mesh",
-		name: "API Mesh",
-		slug: "api-mesh",
-		access: "owner",
-	},
-	{
-		id: "project-partner-portal",
-		name: "Partner Portal",
-		slug: "partner-portal",
-		access: "collaborator",
-	},
-	{
-		id: "project-analytics-lab",
-		name: "Analytics Lab",
-		slug: "analytics-lab",
-		access: "collaborator",
-	},
-];
 
 function slugifyProjectName(name: string) {
 	const slug = name
@@ -49,22 +21,14 @@ function slugifyProjectName(name: string) {
 	return slug || "new-project";
 }
 
-function createProjectId() {
-	return `project-${Date.now().toString(36)}-${Math.random()
-		.toString(36)
-		.slice(2, 8)}`;
+export interface UseProjectManagementProps {
+	initialProjects: ProjectItem[];
 }
 
-function createProjectItem(name: string): ProjectItem {
-	return {
-		id: createProjectId(),
-		name,
-		slug: slugifyProjectName(name),
-		access: "owner",
-	};
-}
-
-export function useProjectManagement() {
+export function useProjectManagement({
+	initialProjects,
+}: UseProjectManagementProps) {
+	const navigate = useNavigate();
 	const [projects, setProjects] = useState<ProjectItem[]>(initialProjects);
 	const [selectedProjectId, setSelectedProjectId] = useState(
 		initialProjects[0]?.id ?? "",
@@ -138,15 +102,31 @@ export function useProjectManagement() {
 		}
 
 		setIsSubmitting(true);
-		await Promise.resolve();
 
-		const nextProject = createProjectItem(trimmedName);
-		setProjects((currentProjects) => [nextProject, ...currentProjects]);
-		setSelectedProjectId(nextProject.id);
-		setDialogState({ mode: null, projectId: null });
-		setCreateProjectName("");
-		setRenameProjectName("");
-		setIsSubmitting(false);
+		try {
+			const response = await fetch("/api/projects", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ name: trimmedName }),
+			});
+
+			if (!response.ok) {
+				throw new Error("Failed to create project");
+			}
+
+			const data = await response.json();
+			const newProject = data.project;
+
+			setProjects((currentProjects) => [newProject, ...currentProjects]);
+			setSelectedProjectId(newProject.id);
+			setDialogState({ mode: null, projectId: null });
+			setCreateProjectName("");
+			setRenameProjectName("");
+			setIsSubmitting(false);
+		} catch (err) {
+			console.error("Failed to create project:", err);
+			setIsSubmitting(false);
+		}
 	}
 
 	async function renameProject(event: React.FormEvent<HTMLFormElement>) {
@@ -160,23 +140,34 @@ export function useProjectManagement() {
 		}
 
 		setIsSubmitting(true);
-		await Promise.resolve();
 
-		setProjects((currentProjects) =>
-			currentProjects.map((project) =>
-				project.id === projectId
-					? {
-							...project,
-							name: trimmedName,
-							slug: slugifyProjectName(trimmedName),
-						}
-					: project,
-			),
-		);
-		setDialogState({ mode: null, projectId: null });
-		setRenameProjectName("");
-		setCreateProjectName("");
-		setIsSubmitting(false);
+		try {
+			const response = await fetch(`/api/projects/${projectId}`, {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ name: trimmedName }),
+			});
+
+			if (!response.ok) {
+				throw new Error("Failed to rename project");
+			}
+
+			const data = await response.json();
+			const updatedProject = data.project;
+
+			setProjects((currentProjects) =>
+				currentProjects.map((project) =>
+					project.id === projectId ? updatedProject : project,
+				),
+			);
+			setDialogState({ mode: null, projectId: null });
+			setRenameProjectName("");
+			setCreateProjectName("");
+			setIsSubmitting(false);
+		} catch (err) {
+			console.error("Failed to rename project:", err);
+			setIsSubmitting(false);
+		}
 	}
 
 	async function deleteProject(event: React.FormEvent<HTMLFormElement>) {
@@ -189,23 +180,43 @@ export function useProjectManagement() {
 		}
 
 		setIsSubmitting(true);
-		await Promise.resolve();
 
-		setProjects((currentProjects) => {
-			const remainingProjects = currentProjects.filter(
-				(project) => project.id !== projectId,
-			);
+		try {
+			const response = await fetch(`/api/projects/${projectId}`, {
+				method: "DELETE",
+			});
 
-			if (selectedProjectId === projectId) {
-				setSelectedProjectId(remainingProjects[0]?.id ?? "");
+			if (!response.ok) {
+				throw new Error("Failed to delete project");
 			}
 
-			return remainingProjects;
-		});
-		setDialogState({ mode: null, projectId: null });
-		setCreateProjectName("");
-		setRenameProjectName("");
-		setIsSubmitting(false);
+			const wasDeleted = selectedProjectId === projectId;
+
+			setProjects((currentProjects) => {
+				const remainingProjects = currentProjects.filter(
+					(project) => project.id !== projectId,
+				);
+
+				if (selectedProjectId === projectId) {
+					setSelectedProjectId(remainingProjects[0]?.id ?? "");
+				}
+
+				return remainingProjects;
+			});
+			setDialogState({ mode: null, projectId: null });
+			setCreateProjectName("");
+			setRenameProjectName("");
+
+			// If we deleted the selected project, redirect to home
+			if (wasDeleted) {
+				await navigate({ to: "/editor" });
+			} else {
+				setIsSubmitting(false);
+			}
+		} catch (err) {
+			console.error("Failed to delete project:", err);
+			setIsSubmitting(false);
+		}
 	}
 
 	return {

@@ -33,12 +33,9 @@ export function ProjectSidebar({
 	onDeleteProject,
 }: ProjectSidebarProps) {
 	const [activeTab, setActiveTab] = useState("my-projects");
-	const ownedProjects = projects.filter(
-		(project) => project.access === "owner",
-	);
-	const sharedProjects = projects.filter(
-		(project) => project.access === "collaborator",
-	);
+	// All projects in the current implementation are owned by the user
+	const ownedProjects = projects;
+	const sharedProjects: ProjectItem[] = [];
 
 	function handleProjectKeyDown(
 		event: KeyboardEvent<HTMLButtonElement>,
@@ -90,9 +87,6 @@ export function ProjectSidebar({
 							>
 								<p className="truncate text-sm font-medium text-foreground">
 									{project.name}
-								</p>
-								<p className="mt-1 truncate text-xs text-muted-foreground">
-									{project.slug}
 								</p>
 							</button>
 
