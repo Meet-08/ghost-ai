@@ -209,6 +209,7 @@ export function useProjectManagement({
 
 			// If we deleted the selected project, redirect to home
 			if (wasDeleted) {
+				setIsSubmitting(false);
 				await navigate({ to: "/editor" });
 			} else {
 				setIsSubmitting(false);

@@ -5,7 +5,7 @@ import { createServerFn } from "@tanstack/react-start";
 export const requireAuth = createServerFn().handler(async () => {
 	const { isAuthenticated, userId } = await auth();
 
-	if (!isAuthenticated) {
+	if (!isAuthenticated || !userId) {
 		throw redirect({ to: "/sign-in" });
 	}
 
