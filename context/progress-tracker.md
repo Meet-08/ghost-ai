@@ -4,13 +4,18 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Editor Workspace Shell
+- Editor Workspace Canvas
 
 ## Current Goal
 
-- Resolve pre-existing verification cleanup before the next editor canvas feature.
+- Add shape-specific canvas visuals and richer edge rendering on top of the basic custom node renderer.
 
 ## Completed
+
+- ✅ Updated AI sidebar behavior in the editor workspace shell
+  - Changed the AI sidebar in `/editor/$projectId` to overlay the canvas from the right
+  - Removed layout-width consumption so opening AI no longer shrinks canvas space
+  - Kept desktop-only visibility and existing toggle behavior
 
 - ✅ Updated `styles.css` with Ghost AI dark theme design system
   - Defined all CSS custom properties for backgrounds, borders, text, and accents
@@ -93,13 +98,43 @@ Update this file whenever the current phase, active feature, or implementation s
   - Updated `GET /api/projects` to return both owned and collaborator projects with access metadata
   - Kept sidebar tab filtering unchanged: owner projects appear under "My Projects", collaborator projects under "Shared"
 
+- ✅ Implemented Liveblocks server glue: presence types, client helpers, and auth route
+  - Added `cursor` and `isThinking` to `Presence` in `liveblocks.config.ts`
+  - Added `UserMeta` fields for `displayName`, `avatarUrl`, and `cursorColor` in `liveblocks.config.ts`
+  - Created `src/lib/liveblocks.ts` with a cached-style REST helper, deterministic color mapping, `ensureRoomExists()` and `createSessionForRoom()` helpers
+  - Implemented `POST /api/liveblocks-auth` at `src/routes/api/liveblocks-auth.ts` which requires Clerk auth, verifies project access, ensures the Liveblocks room, and returns a session token with user metadata
+- ✅ Fixed Liveblocks auth to use the documented `prepareSession()` / `authorize()` flow
+  - Switched the auth route to `@liveblocks/node` so room access is granted directly during authorization
+  - Removed the brittle manual room precreation REST call that was returning 404s
+  - Kept the same Clerk-backed project access checks and user metadata enrichment
+- ✅ Replaced the editor workspace placeholder with a Liveblocks-backed React Flow canvas foundation
+  - Added shared canvas contracts in `src/types/canvas.ts` for node data, node color palette, node shapes, and custom canvas node/edge type names
+  - Built a client-side editor canvas wrapper that sets up `LiveblocksProvider`, `RoomProvider`, `ClientSideSuspense`, loading, and connection error states
+  - Wired `useLiveblocksFlow` into React Flow with empty initial nodes and edges, loose connections, fit view, minimap, and a dot-pattern background
+  - Swapped the `/editor/$projectId` placeholder for the collaborative canvas while keeping the workspace page server-rendered
+  - Verified the feature with `bun run build` and a targeted `bunx biome check` on the touched files
+
+- ✅ Added the bottom shape panel and basic canvas node renderer
+  - Added draggable shape buttons for rectangle, diamond, circle, pill, cylinder, and hexagon
+  - Added drag payloads with the shape name and default size so drops can create new nodes
+  - Added canvas drop handling that converts screen coordinates to flow coordinates and creates a new node with the custom canvas node type
+  - Rendered custom canvas nodes as simple bordered rectangles with the label centered
+  - Verified with `bun run build`
+  - Updated node ID generation to use the shape name, timestamp, and counter as specified
+
+- ✅ Addressed targeted review findings for canvas IDs, error reporting, and Liveblocks server exports
+  - Replaced counter-based canvas node IDs with UUID-based IDs to avoid cross-client collisions
+  - Added `componentDidCatch` to `CanvasErrorBoundary` with best-effort logging and console fallback
+  - Simplified `liveblocksSecretKey()` to read env directly and removed redundant wrapper
+  - Removed the default export from `src/server/liveblocks.server.ts` and kept named exports only
+
 ## In Progress
 
-- Resolve pre-existing `prisma/seed.ts` generated-client mismatch so full TypeScript verification is clean
+- Shape-specific canvas visuals and richer edge rendering
 
 ## Next Up
 
-- Resume editor canvas and React Flow integration after cleaning the seed verification issue
+- Add shape-specific canvas visuals and richer edge rendering when the design calls for it
 
 ## Open Questions
 
@@ -114,6 +149,8 @@ Update this file whenever the current phase, active feature, or implementation s
 - Geist Sans for UI text, Geist Mono for code/mono content
 
 ## Session Notes
+
+- AI sidebar in `/editor/$projectId` now overlays above the canvas (absolute positioned, slide-in) instead of taking flex layout space.
 
 - Fixed `/editor/$projectId` rendering by allowing the `/editor` parent route to render its child outlet for nested workspace URLs, so unauthorized project URLs can reach `AccessDenied`.
 - Completed feature spec `08-editor-workspace-shell.md`: shell/access behavior is implemented; full build is blocked in the sandbox by Bun/Vite native dependency access, and `bunx tsc --noEmit` is blocked only by pre-existing seed errors.

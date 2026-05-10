@@ -18,6 +18,7 @@ import { Route as SignUpSplatRouteImport } from './routes/sign-up/$'
 import { Route as SignInSplatRouteImport } from './routes/sign-in/$'
 import { Route as EditorProjectIdRouteImport } from './routes/editor/$projectId'
 import { Route as ApiProjectsRouteImport } from './routes/api/projects'
+import { Route as ApiLiveblocksAuthRouteImport } from './routes/api/liveblocks-auth'
 import { Route as ApiProjectsProjectIdRouteImport } from './routes/api/projects/$projectId'
 import { Route as ApiProjectsProjectIdCollaboratorsRouteImport } from './routes/api/projects/$projectId/collaborators'
 
@@ -66,6 +67,11 @@ const ApiProjectsRoute = ApiProjectsRouteImport.update({
   path: '/api/projects',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiLiveblocksAuthRoute = ApiLiveblocksAuthRouteImport.update({
+  id: '/api/liveblocks-auth',
+  path: '/api/liveblocks-auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiProjectsProjectIdRoute = ApiProjectsProjectIdRouteImport.update({
   id: '/$projectId',
   path: '/$projectId',
@@ -83,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/editor': typeof EditorRouteWithChildren
   '/sign-in': typeof SignInRouteWithChildren
   '/sign-up': typeof SignUpRouteWithChildren
+  '/api/liveblocks-auth': typeof ApiLiveblocksAuthRoute
   '/api/projects': typeof ApiProjectsRouteWithChildren
   '/editor/$projectId': typeof EditorProjectIdRoute
   '/sign-in/$': typeof SignInSplatRoute
@@ -95,6 +102,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/editor': typeof EditorRouteWithChildren
   '/sign-up': typeof SignUpRouteWithChildren
+  '/api/liveblocks-auth': typeof ApiLiveblocksAuthRoute
   '/api/projects': typeof ApiProjectsRouteWithChildren
   '/editor/$projectId': typeof EditorProjectIdRoute
   '/sign-in/$': typeof SignInSplatRoute
@@ -109,6 +117,7 @@ export interface FileRoutesById {
   '/editor': typeof EditorRouteWithChildren
   '/sign-in': typeof SignInRouteWithChildren
   '/sign-up': typeof SignUpRouteWithChildren
+  '/api/liveblocks-auth': typeof ApiLiveblocksAuthRoute
   '/api/projects': typeof ApiProjectsRouteWithChildren
   '/editor/$projectId': typeof EditorProjectIdRoute
   '/sign-in/$': typeof SignInSplatRoute
@@ -124,6 +133,7 @@ export interface FileRouteTypes {
     | '/editor'
     | '/sign-in'
     | '/sign-up'
+    | '/api/liveblocks-auth'
     | '/api/projects'
     | '/editor/$projectId'
     | '/sign-in/$'
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/'
     | '/editor'
     | '/sign-up'
+    | '/api/liveblocks-auth'
     | '/api/projects'
     | '/editor/$projectId'
     | '/sign-in/$'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '/editor'
     | '/sign-in'
     | '/sign-up'
+    | '/api/liveblocks-auth'
     | '/api/projects'
     | '/editor/$projectId'
     | '/sign-in/$'
@@ -163,6 +175,7 @@ export interface RootRouteChildren {
   EditorRoute: typeof EditorRouteWithChildren
   SignInRoute: typeof SignInRouteWithChildren
   SignUpRoute: typeof SignUpRouteWithChildren
+  ApiLiveblocksAuthRoute: typeof ApiLiveblocksAuthRoute
   ApiProjectsRoute: typeof ApiProjectsRouteWithChildren
 }
 
@@ -229,6 +242,13 @@ declare module '@tanstack/react-router' {
       path: '/api/projects'
       fullPath: '/api/projects'
       preLoaderRoute: typeof ApiProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/liveblocks-auth': {
+      id: '/api/liveblocks-auth'
+      path: '/api/liveblocks-auth'
+      fullPath: '/api/liveblocks-auth'
+      preLoaderRoute: typeof ApiLiveblocksAuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/projects/$projectId': {
@@ -312,6 +332,7 @@ const rootRouteChildren: RootRouteChildren = {
   EditorRoute: EditorRouteWithChildren,
   SignInRoute: SignInRouteWithChildren,
   SignUpRoute: SignUpRouteWithChildren,
+  ApiLiveblocksAuthRoute: ApiLiveblocksAuthRoute,
   ApiProjectsRoute: ApiProjectsRouteWithChildren,
 }
 export const routeTree = rootRouteImport

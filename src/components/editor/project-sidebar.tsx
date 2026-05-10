@@ -64,56 +64,49 @@ export function ProjectSidebar({
 					const isSelected = project.id === selectedProjectId;
 
 					return (
-						<Link
+						<div
 							key={project.id}
-							to="/editor/$projectId"
-							params={{ projectId: project.id }}
-							className="block"
-							onClick={() => onSelectProject(project.id)}
+							className={`group relative rounded-2xl border transition-colors ${
+								isSelected
+									? "border-primary bg-accent/10"
+									: "border-border bg-card hover:border-border/80 hover:bg-secondary/40"
+							}`}
 						>
-							<div
-								className={`group relative rounded-2xl border transition-colors ${
-									isSelected
-										? "border-primary bg-accent/10"
-										: "border-border bg-card hover:border-border/80 hover:bg-secondary/40"
-								}`}
+							{/* Link wraps only the text label, not the action buttons */}
+							<Link
+								to="/editor/$projectId"
+								params={{ projectId: project.id }}
+								onClick={() => onSelectProject(project.id)}
+								className="block w-full rounded-2xl px-4 py-3 pr-20 text-left"
 							>
-								<div className="block w-full rounded-2xl px-4 py-3 pr-20 text-left">
-									<p className="truncate text-sm font-medium text-foreground">
-										{project.name}
-									</p>
-								</div>
+								<p className="truncate text-sm font-medium text-foreground">
+									{project.name}
+								</p>
+							</Link>
 
-								{showActions && (
-									<div className="absolute top-1/2 right-3 flex -translate-y-1/2 items-center gap-1 opacity-100 transition-opacity group-hover:opacity-100 md:opacity-0 md:group-hover:opacity-100">
-										<Button
-											type="button"
-											variant="ghost"
-											size="icon-sm"
-											onClick={(event) => {
-												event.stopPropagation();
-												onRenameProject(project.id);
-											}}
-											aria-label={`Rename ${project.name}`}
-										>
-											<PencilLine className="size-4" />
-										</Button>
-										<Button
-											type="button"
-											variant="ghost"
-											size="icon-sm"
-											onClick={(event) => {
-												event.stopPropagation();
-												onDeleteProject(project.id);
-											}}
-											aria-label={`Delete ${project.name}`}
-										>
-											<Trash2 className="size-4" />
-										</Button>
-									</div>
-								)}
-							</div>
-						</Link>
+							{showActions && (
+								<div className="absolute top-1/2 right-3 flex -translate-y-1/2 items-center gap-1 opacity-100 transition-opacity group-hover:opacity-100 md:opacity-0 md:group-hover:opacity-100">
+									<Button
+										type="button"
+										variant="ghost"
+										size="icon-sm"
+										onClick={() => onRenameProject(project.id)}
+										aria-label={`Rename ${project.name}`}
+									>
+										<PencilLine className="size-4" />
+									</Button>
+									<Button
+										type="button"
+										variant="ghost"
+										size="icon-sm"
+										onClick={() => onDeleteProject(project.id)}
+										aria-label={`Delete ${project.name}`}
+									>
+										<Trash2 className="size-4" />
+									</Button>
+								</div>
+							)}
+						</div>
 					);
 				})}
 			</div>
