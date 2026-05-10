@@ -27,17 +27,8 @@ export function colorForUserId(userId: string) {
 	return PALETTE[idx];
 }
 
-function liveblocksSecret() {
+export function liveblocksSecretKey() {
 	const s = process.env.LIVEBLOCKS_SECRET;
 	if (!s) throw new Error("LIVEBLOCKS_SECRET is not set");
 	return s;
 }
-
-export function liveblocksSecretKey() {
-	return liveblocksSecret();
-}
-
-export default {
-	colorForUserId,
-	liveblocksSecretKey,
-};

@@ -61,8 +61,6 @@ interface CanvasShapePreset {
 const DEFAULT_CANVAS_NODE_COLOR = NODE_COLORS[0];
 const SHAPE_DRAG_MIME = "application/x-ghost-ai-canvas-shape";
 
-let canvasNodeIdCounter = 0;
-
 const CANVAS_SHAPE_PRESETS: CanvasShapePreset[] = [
 	{ shape: "rectangle", label: "Rectangle", width: 164, height: 96 },
 	{ shape: "diamond", label: "Diamond", width: 152, height: 152 },
@@ -301,6 +299,38 @@ class CanvasErrorBoundary extends Component<
 		};
 	}
 
+	override componentDidCatch(error: Error, info: React.ErrorInfo): void {
+		const loggerTarget = globalThis as {
+			logger?: {
+				error?: (error: Error, context?: Record<string, unknown>) => void;
+			};
+			telemetry?: {
+				report?: (event: string, payload?: Record<string, unknown>) => void;
+			};
+		};
+
+		if (typeof loggerTarget.logger?.error === "function") {
+			loggerTarget.logger.error(error, {
+				componentStack: info.componentStack,
+				scope: "CanvasErrorBoundary",
+			});
+			return;
+		}
+
+		if (typeof loggerTarget.telemetry?.report === "function") {
+			loggerTarget.telemetry.report("canvas_error_boundary", {
+				message: error.message,
+				componentStack: info.componentStack,
+			});
+			return;
+		}
+
+		console.error("CanvasErrorBoundary caught an error", {
+			error,
+			componentStack: info.componentStack,
+		});
+	}
+
 	override render() {
 		if (this.state.hasError) {
 			return <CanvasErrorFallback errorMessage={this.state.errorMessage} />;
@@ -396,11 +426,8 @@ function CanvasFlow() {
 				y: event.clientY,
 			});
 
-			const timestamp = Date.now();
-			const counter = ++canvasNodeIdCounter;
-
 			addNodes({
-				id: `${draggedShape.shape}-${timestamp}-${counter}`,
+				id: `${draggedShape.shape}-${crypto.randomUUID()}`,
 				type: CANVAS_NODE_TYPE,
 				position,
 				style: {

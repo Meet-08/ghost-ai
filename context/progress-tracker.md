@@ -122,6 +122,12 @@ Update this file whenever the current phase, active feature, or implementation s
   - Verified with `bun run build`
   - Updated node ID generation to use the shape name, timestamp, and counter as specified
 
+- ✅ Addressed targeted review findings for canvas IDs, error reporting, and Liveblocks server exports
+  - Replaced counter-based canvas node IDs with UUID-based IDs to avoid cross-client collisions
+  - Added `componentDidCatch` to `CanvasErrorBoundary` with best-effort logging and console fallback
+  - Simplified `liveblocksSecretKey()` to read env directly and removed redundant wrapper
+  - Removed the default export from `src/server/liveblocks.server.ts` and kept named exports only
+
 ## In Progress
 
 - Shape-specific canvas visuals and richer edge rendering
